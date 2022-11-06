@@ -8,7 +8,7 @@ const FareSchema = Schema({
         unique: true
     },
     vehicle_type:{
-        type: Strine,
+        type: String,
         enum: ['MOTO', 'CARRO'],
         required: true
     }
