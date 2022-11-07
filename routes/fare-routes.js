@@ -6,7 +6,7 @@ router.route('/fare')
     .get(farecontroller.getAll)
     .post(farecontroller.create);
 
-router.route('fare/:id')
+router.route('/fare/:id')
     .get(farecontroller.getById)
     .put(farecontroller.update)
     .patch(farecontroller.update);

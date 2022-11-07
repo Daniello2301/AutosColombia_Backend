@@ -5,6 +5,8 @@ const methodOverride = require('method-override');
 
 //Import routes
 const fare = require('./routes/fare-routes');
+const tiket = require('./routes/tiket-routes')
+const vehicle = require('./routes/vechicle-routes')
 
 // Import connection to Data Base
 const DBConnection = require('./config/DB_connection');
@@ -29,6 +31,10 @@ app.get('/', function(req, res){
 // Use routes
 // fare routes
 app.use('/api', fare);
+// Tiket routes
+app.use('/api', tiket);
+// Vehicle routes
+app.use('/api', vehicle);
 
 // setup application
 const PORT = process.env.PORT || 4000

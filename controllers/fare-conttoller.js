@@ -60,15 +60,15 @@ const update = async(req, res) => {
         const {  fare_type, vehicle_type } = req.body;
 
         let fareExists = await Fare.findOne({ fare_type : fare_type, _id: { $ne : id } });
-        if(!fareExists) { return res.status(404).json({mjs: "Fare is aready exist"}) }
+        if(fareExists) { return res.status(404).json({mjs: "Fare is aready exist"}) }
 
         fareFound.fare_type = fare_type;
         fareFound.vehicle_type = vehicle_type;
 
-        fareFound = await Fare.save();
+        fareFound = await fareFound.save();
 
         res.status(202).send(fareFound);
-
+        
     } catch (error) {
         console.log(error)
         res.status(500).json({msj: error.message}).send("Internal Error! :(")

@@ -26,7 +26,7 @@ const TiketSchema = Schema({
 },
 {
     timestamps:true,
-    versionkey:false
+    versionKey:false
 }) 
 
 module.exports = model('Tiket', TiketSchema)
