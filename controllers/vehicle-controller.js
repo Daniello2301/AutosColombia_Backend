@@ -52,14 +52,18 @@ const createVehicle = async (req, res) => {
 
         let vehicle = new Vehicle();
 
+        DateIn = new Date();
+        HourIn = DateIn.getHours() + " : " + DateIn.getMinutes();
+
         vehicle.lisence_place = req.body.lisence_place;
         vehicle.vehicle_type = req.body.vehicle_type;
         vehicle.user = req.body.user;
         vehicle.tiket = req.body.tiket._id;
         vehicle.fare = req.body.fare._id;
         vehicle.date = Date.now();
-        vehicle.hour_in = req.body.hour_in;
+        vehicle.hour_in = HourIn;
         vehicle.hour_out = "00:00";
+
 
         vehicle = await vehicle.save();
 
@@ -84,15 +88,18 @@ const updateVehicle = async (req, res) => {
             return res.status(404).json({ mjs: "Not found vehicle" });
         }
 
-        const { lisence_place, user, tiket, hour_out } = req.body;
+        const { lisence_place, user, tiket } = req.body;
 
         let vehicleExists = await Vehicle.findOne({
             lisence_place: lisence_place,
             _id: { $ne: id },
         });
         if (vehicleExists) {
-            return res.status(404).json({ mjs: "Vehicle is aready exist" });
+            return res.status(404).json({ mjs: "Vehicle is already exist" });
         }
+
+        DateOut = new Date();
+        HourOut = DateOut.getHours() + " : " + DateOut.getMinutes();
 
         vehicleFound.lisence_place = vehicleFound.lisence_place;
         vehicleFound.vehicle_type = vehicleFound.vehicle_type;
@@ -101,7 +108,7 @@ const updateVehicle = async (req, res) => {
         vehicleFound.fare = vehicleFound.fare;
         vehicleFound.date = vehicleFound.date;
         vehicleFound.hour_in = vehicleFound.hour_in;
-        vehicleFound.hour_out = hour_out;
+        vehicleFound.hour_out = HourOut;
 
         vehicleFound = await vehicleFound.save();
 

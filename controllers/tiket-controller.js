@@ -1,57 +1,60 @@
-const Tiket = require('../models/Tiket');
+const Tiket = require("../models/Tiket");
 
-const getAll = async (req, res) =>{
-
+const getAll = async (req, res) => {
     try {
-        console.log("GET/tikets")
+        console.log("GET/tikets");
         const response = await Tiket.find();
         res.status(201).send(response);
-
     } catch (error) {
-     console.log(error);
-     res.status(500).json({ msj: "Internal server error :(" }).send(error.message)
+        console.log(error);
+        res
+            .status(500)
+            .json({ msj: "Internal server error :(" })
+            .send(error.message);
     }
-}
+};
 
 const getById = async (req, res) => {
     try {
-        console.log("GET/tiketId")
+        console.log("GET/tiketId");
         const { id } = req.params;
 
-        const response = await Tiket.findById({ _id : id });
+        const response = await Tiket.findById({ _id: id });
         res.status(200).send(response);
-
     } catch (error) {
-     console.log(error);
-     res.status(500).json({ msj: "Internal server error :(" }).send(error.message)
+        console.log(error);
+        res
+            .status(500)
+            .json({ msj: "Internal server error :(" })
+            .send(error.message);
     }
+};
 
-}
-
-const getByCodeTiket = async (req, res) =>{
+const getByCodeTiket = async (req, res) => {
     try {
+        console.log("GET/tikets by code");
 
-        console.log("GET/tikets by code")
-        
-       const { code } = req.body.code;
-       const tiketFound = await Tiket.findOne({ code :  code })
+        const { code } = req.body.code;
+        const tiketFound = await Tiket.findOne({ code: code });
 
-       res.status(200).send(tiketFound);
-
+        res.status(200).send(tiketFound);
     } catch (error) {
-     console.log(error);
-     res.status(500).json({ msj: "Internal server error :(" }).send(error.message)
+        console.log(error);
+        res
+            .status(500)
+            .json({ msj: "Internal server error :(" })
+            .send(error.message);
     }
-
-}
+};
 
 const createTiket = async (req, res) => {
     try {
-        
-        console.log("POST/tiket")
+        console.log("POST/tiket");
 
-        const TiketFound = await Tiket.findOne({ code : req.body.code })
-        if(TiketFound) { return res.status(400).json({ msj: "The tiket is already exist" }) }
+        const TiketFound = await Tiket.findOne({ code: req.body.code });
+        if (TiketFound) {
+            return res.status(400).json({ msj: "The tiket is already exist" });
+        }
 
         let tiket = new Tiket();
 
@@ -63,28 +66,33 @@ const createTiket = async (req, res) => {
 
         tiket = await tiket.save();
 
-        res.status(200).send(tiket)
-
+        res.status(200).send(tiket);
     } catch (error) {
-     console.log(error);
-     res.status(500).json({ msj: "Internal server error :(" }).send(error.message)
+        console.log(error);
+        res
+            .status(500)
+            .json({ msj: "Internal server error :(" })
+            .send(error.message);
     }
+};
 
-}
-
-const updateTiket = async(req, res) => {
+const updateTiket = async (req, res) => {
     try {
-        console.log("PUT/tiket/",req.params.id)
-        
+        console.log("PUT/tiket/", req.params.id);
+
         const { id } = req.params;
-        
-        let tiketFound = await Tiket.findById({ _id : id });
-        if(!tiketFound) { return res.status(404).json({mjs: "Not found fare"}) }
 
-        const {  code, cell, employee, value, date } = req.body;
+        let tiketFound = await Tiket.findById({ _id: id });
+        if (!tiketFound) {
+            return res.status(404).json({ mjs: "Not found fare" });
+        }
 
-        let tiketExists = await Tiket.findOne({ code : code, _id: { $ne : id } });
-        if(tiketExists) { return res.status(404).json({mjs: "Fare is aready exist"}) }
+        const { code, cell, employee, value, date } = req.body;
+
+        let tiketExists = await Tiket.findOne({ code: code, _id: { $ne: id } });
+        if (tiketExists) {
+            return res.status(404).json({ mjs: "Fare is aready exist" });
+        }
 
         tiketFound.code = code;
         tiketFound.cell = cell;
@@ -95,34 +103,36 @@ const updateTiket = async(req, res) => {
         tiketFound = await tiketFound.save();
 
         res.status(202).send(tiketFound);
-
     } catch (error) {
-     console.log(error);
-     res.status(500).json({ msj: "Internal server error :(" }).send(error.message)
+        console.log(error);
+        res
+            .status(500)
+            .json({ msj: "Internal server error :(" })
+            .send(error.message);
     }
-
-}
+};
 
 const deleteTiket = async (req, res) => {
     try {
-        
-        console.log("DELETE/tiket",req.params.id);
+        console.log("DELETE/tiket", req.params.id);
         const { id } = req.params;
 
-        const tiketExiste = await Tiket.findById({_id: id});
-        if(!tiketExiste){
+        const tiketExiste = await Tiket.findById({ _id: id });
+        if (!tiketExiste) {
             return res.status(404).json({ mjs: "Tiket not exist" });
         }
 
         const response = await tiketExiste.remove();
 
         res.status(200).json(response);
-
     } catch (error) {
-     console.log(error);
-     res.status(500).json({ msj: "Internal server error :(" }).send(error.message)
+        console.log(error);
+        res
+            .status(500)
+            .json({ msj: "Internal server error :(" })
+            .send(error.message);
     }
-}
+};
 
 module.exports = {
     getAll,
@@ -130,5 +140,5 @@ module.exports = {
     getByCodeTiket,
     createTiket,
     updateTiket,
-    deleteTiket
-}
+    deleteTiket,
+};
