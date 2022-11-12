@@ -1,14 +1,11 @@
 const {Schema, model} = require('mongoose');
 
 const EmployeeSchema = Schema({
-    code:{
-        type: String,
-        required: true,
-        unique: true
-    },
+
     document:{
         type: Number,
         required: true,
+        unique:true
     },
     name:{
         type: String,
@@ -22,7 +19,7 @@ const EmployeeSchema = Schema({
         type: Number,
         required: true, 
     },
-    direction:{
+    address:{
         type: String,
         required: true,
     },
