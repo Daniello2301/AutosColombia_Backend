@@ -1,11 +1,10 @@
 const {Schema, model} = require('mongoose');
 
-const EmployeeSchema = Schema({
+const CustomerSchema = Schema({
 
     document:{
         type: Number,
         required: true,
-        unique:true
     },
     name:{
         type: String,
@@ -19,27 +18,20 @@ const EmployeeSchema = Schema({
         type: Number,
         required: true, 
     },
-    address:{
+    direction:{
         type: String,
         required: true,
     },
-    email:{
-        type: String,
-        required: true,
-    },
-    password:{
-        type: String,
-        required: true, 
-    },
-    position:{
-        type: String,
-        required: true, 
-    },
-    
+    vehicle:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'Vehicle',
+        required:true      
+    }
+   
 },
 {
     timestamps:true,
     versionkey:false
 }) 
 
-module.exports = model('Employee',EmployeeSchema)
+module.exports = model('Customer',CustomerSchema)
