@@ -4,7 +4,7 @@ const customercontroller = require('../controllers/customer-controller');
 
 router.route('/customer')
     .get(customercontroller.getAll)
-    .post(customercontroller.createVehicle)
+    .post(customercontroller.createCustomer)
 
 router.route('/customer/:id')
     .get(customercontroller.getById)

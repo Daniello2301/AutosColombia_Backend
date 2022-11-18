@@ -23,11 +23,10 @@ const CustomerSchema = Schema({
         required: true,
     },
     vehicle:{
-        type: mongoose.Schema.Types.ObjectId,
+        type: Schema.Types.ObjectId,
         ref:'Vehicle',
         required:true      
     }
-   
 },
 {
     timestamps:true,

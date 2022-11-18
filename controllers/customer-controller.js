@@ -2,8 +2,22 @@ const Customer = require("../models/customer");
 
 const getAll = async (req, res) => {
     try {
-        console.log("GET/customer");
-        const response = await Customer.find();
+        console.log("GET/customers");
+        const response = await Customer.find().populate([
+            {
+                path: "vehicle",
+                select:"lisence_place date, hour_in hour_out",
+                populate:[{
+                    path:"tiket",
+                    select:"cell value"
+                    
+                },
+                {
+                    path:"fare",
+                    select:"fare_type", 
+                }]
+            }
+        ]);
 
         res.status(201).send(response);
     } catch (error) {
@@ -17,7 +31,7 @@ const getAll = async (req, res) => {
 
 const getById = async (req, res) => {
     try {
-        console.log("GET/tiketId");
+        console.log("GET/customerId");
         const { id } = req.params;
 
         const response = await Customer.findById({ _id: id });
@@ -33,7 +47,7 @@ const getById = async (req, res) => {
 
 const createCustomer = async (req, res) => {
     try {
-        console.log("POST/tiket");
+        console.log("POST/customer");
 
         const customerFound = await Customer.findOne({
             document: req.body.document,
@@ -65,7 +79,7 @@ const createCustomer = async (req, res) => {
 
 const updateCustomer = async (req, res) => {
     try {
-        console.log("PUT/tiket/", req.params.id);
+        console.log("PUT/customer", req.params.id);
 
         const { id } = req.params;
 
@@ -84,9 +98,9 @@ const updateCustomer = async (req, res) => {
             return res.status(404).json({ mjs: "Customer is already exist" });
         }
 
-        customerFound.document = document;
-        customerFound.name = name;
-        customerFound.lastName = lastName;
+        customerFound.document = customerFound.document;
+        customerFound.name = customerFound.name;
+        customerFound.lastName = customerFound.lastName;
         customerFound.phone = phone;
         customerFound.direction = direction;
         customerFound.vehicle = vehicle._id;
