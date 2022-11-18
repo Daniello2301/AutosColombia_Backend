@@ -4,8 +4,11 @@ const tiketcontroller = require('../controllers/tiket-controller');
 
 router.route('/tiket')
     .get(tiketcontroller.getAll)
-    .get(tiketcontroller.getByCodeTiket)
     .post(tiketcontroller.createTiket)
+
+router.route('/tiket-code')
+    .get(tiketcontroller.getByCodeTiket)
+
 
 router.route('/tiket/:id')
     .get(tiketcontroller.getById)

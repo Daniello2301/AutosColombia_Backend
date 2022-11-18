@@ -1,6 +1,6 @@
 const {Schema, model} = require('mongoose');
 
-// Create mongoose eschema 
+// Create mongoose schema 
 const TiketSchema = Schema({
     code:{
         type: String,
@@ -12,8 +12,9 @@ const TiketSchema = Schema({
         required: true,
     },
     employee:{
-        type: String,
-        required: true,
+        type: Schema.Types.ObjectId,
+        ref:'Employee',
+        required:true
     },
     value:{
         type: Number,

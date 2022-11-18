@@ -17,6 +17,7 @@ const getAll = async (req, res) => {
 const getById = async (req, res) => {
     try {
         console.log("GET/tiketId");
+
         const { id } = req.params;
 
         const response = await Tiket.findById({ _id: id });
@@ -30,14 +31,16 @@ const getById = async (req, res) => {
     }
 };
 
+
+
 const getByCodeTiket = async (req, res) => {
     try {
         console.log("GET/tikets by code");
 
-        const { code } = req.body.code;
-        const tiketFound = await Tiket.findOne({ code: code });
+        const tiketFound = await Tiket.findOne({ code: req.body.code });
 
         res.status(200).send(tiketFound);
+
     } catch (error) {
         console.log(error);
         res
@@ -46,6 +49,9 @@ const getByCodeTiket = async (req, res) => {
             .send(error.message);
     }
 };
+
+
+
 
 const createTiket = async (req, res) => {
     try {
@@ -75,6 +81,9 @@ const createTiket = async (req, res) => {
             .send(error.message);
     }
 };
+
+
+
 
 const updateTiket = async (req, res) => {
     try {

@@ -13,7 +13,7 @@ const getAll = async (req, res) => {
                 select: "fare_type",
             },
         ]);
-        res.status(201).send(response);
+        res.status(200).send(response);
     } catch (error) {
         console.log(error);
         res
@@ -38,6 +38,33 @@ const getById = async (req, res) => {
             .send(error.message);
     }
 };
+
+const getByLicense = async (req, res) => {
+    try {
+        console.log("GET/vehicleByLicense");
+
+        const response = await Vehicle.findOne({ lisence_place: req.body.lisence_place }).populate([
+            {
+                path: "tiket",
+                select: "cell employee value date",
+            },
+            {
+                path: "fare",
+                select: "fare_type",
+            },
+        ]);
+
+        res.status(200).send(response); 
+
+    } catch (error) {
+        console.log(error);
+        res
+            .status(500)
+            .json({ msj: "Internal server error :(" })
+            .send(error.message);
+
+    }
+}
 
 const createVehicle = async (req, res) => {
     try {
@@ -67,7 +94,7 @@ const createVehicle = async (req, res) => {
 
         vehicle = await vehicle.save();
 
-        res.status(200).send(vehicle);
+        res.status(201).send(vehicle);
     } catch (error) {
         console.log(error);
         res
@@ -112,7 +139,7 @@ const updateVehicle = async (req, res) => {
 
         vehicleFound = await vehicleFound.save();
 
-        res.status(202).send(vehicleFound);
+        res.status(201).send(vehicleFound);
     } catch (error) {
         console.log(error);
         res
@@ -147,6 +174,7 @@ const deleteVehicle = async (req, res) => {
 module.exports = {
     getAll,
     getById,
+    getByLicense,
     createVehicle,
     updateVehicle,
     deleteVehicle,

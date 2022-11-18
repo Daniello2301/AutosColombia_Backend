@@ -22,7 +22,7 @@ const EmployeeSchema = Schema({
         type: Number,
         required: true, 
     },
-    direction:{
+    address:{
         type: String,
         required: true,
     },
