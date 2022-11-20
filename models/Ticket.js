@@ -1,7 +1,7 @@
 const {Schema, model} = require('mongoose');
 
 // Create mongoose schema 
-const TiketSchema = Schema({
+const TicketSchema = Schema({
     code:{
         type: String,
         required: true,
@@ -25,9 +25,9 @@ const TiketSchema = Schema({
         required: true, 
     }
 },
-{
+{ 
     timestamps:true,
     versionKey:false
 }) 
 
-module.exports = model('Tiket', TiketSchema)
+module.exports = model('Ticket', TicketSchema)

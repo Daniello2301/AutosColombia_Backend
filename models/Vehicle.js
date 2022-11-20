@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const VehicleSchema = mongoose.Schema({
 
-    lisence_place:{
+    license_place:{
         type:String,
         required:true,
         unique:true
@@ -13,12 +13,13 @@ const VehicleSchema = mongoose.Schema({
         enum:['MOTO', 'CARRO']
     },
     user:{
-        type:String,
-        required:true,
-    },
-    tiket:{
         type: mongoose.Schema.Types.ObjectId,
-        ref:'Tiket',
+        ref:'Customer',
+        required:true
+    },
+    ticket:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'Ticket',
         required:true
     },
     fare:{

@@ -1,11 +1,16 @@
 const Vehicle = require("../models/Vehicle");
+const { validationResult } = require("express-validator");
 
 const getAll = async (req, res) => {
     try {
         console.log("GET/vehicles");
         const response = await Vehicle.find().populate([
             {
-                path: "tiket",
+                path: "user",
+                select: "document name phone",
+            },
+            {
+                path: "ticket",
                 select: "cell employee value date",
             },
             {
@@ -25,10 +30,23 @@ const getAll = async (req, res) => {
 
 const getById = async (req, res) => {
     try {
-        console.log("GET/tiketId");
+        console.log("GET/vehicleId");
         const { id } = req.params;
 
-        const response = await Vehicle.findById({ _id: id });
+        const response = await Vehicle.findById({ _id: id }).populate([
+            {
+                path: "user",
+                select: "document name phone",
+            },
+            {
+                path: "ticket",
+                select: "cell employee value date",
+            },
+            {
+                path: "fare",
+                select: "fare_type",
+            },
+        ]);;
         res.status(200).send(response);
     } catch (error) {
         console.log(error);
@@ -43,9 +61,13 @@ const getByLicense = async (req, res) => {
     try {
         console.log("GET/vehicleByLicense");
 
-        const response = await Vehicle.findOne({ lisence_place: req.body.lisence_place }).populate([
+        const response = await Vehicle.findOne({ license_place: req.body.license_place }).populate([
             {
-                path: "tiket",
+                path: "user",
+                select: "document name phone",
+            },
+            {
+                path: "ticket",
                 select: "cell employee value date",
             },
             {
@@ -68,12 +90,17 @@ const getByLicense = async (req, res) => {
 
 const createVehicle = async (req, res) => {
     try {
-        console.log("POST/tiket");
+        console.log("POST/Vehicle");
 
-        const vehicletFound = await Vehicle.findOne({
-            lisence_place: req.body.lisence_place,
+        const errors = validationResult(req);
+        if(!errors.isEmpty()){
+            return res.status(400).json({ errors: errors.array() });
+        }
+
+        const vehicleFound = await Vehicle.findOne({
+            license_place: req.body.license_place,
         });
-        if (vehicletFound) {
+        if (vehicleFound) {
             return res.status(400).json({ msj: "The vehicle is already exist" });
         }
 
@@ -82,11 +109,11 @@ const createVehicle = async (req, res) => {
         DateIn = new Date();
         HourIn = DateIn.getHours() + " : " + DateIn.getMinutes();
 
-        vehicle.lisence_place = req.body.lisence_place;
+        vehicle.license_place = req.body.license_place;
         vehicle.vehicle_type = req.body.vehicle_type;
-        vehicle.user = req.body.user;
-        vehicle.tiket = req.body.tiket._id;
-        vehicle.fare = req.body.fare._id;
+        vehicle.user = req.body.user?._id;
+        vehicle.ticket = req.body.ticket?._id;
+        vehicle.fare = req.body.fare?._id;
         vehicle.date = Date.now();
         vehicle.hour_in = HourIn;
         vehicle.hour_out = "00:00";
@@ -106,7 +133,7 @@ const createVehicle = async (req, res) => {
 
 const updateVehicle = async (req, res) => {
     try {
-        console.log("PUT/tiket/", req.params.id);
+        console.log("PUT/vehicle/", req.params.id);
 
         const { id } = req.params;
 
@@ -115,10 +142,10 @@ const updateVehicle = async (req, res) => {
             return res.status(404).json({ mjs: "Not found vehicle" });
         }
 
-        const { lisence_place, user, tiket } = req.body;
+        const { license_place, fare } = req.body;
 
         let vehicleExists = await Vehicle.findOne({
-            lisence_place: lisence_place,
+            license_place: license_place,
             _id: { $ne: id },
         });
         if (vehicleExists) {
@@ -128,11 +155,11 @@ const updateVehicle = async (req, res) => {
         DateOut = new Date();
         HourOut = DateOut.getHours() + " : " + DateOut.getMinutes();
 
-        vehicleFound.lisence_place = vehicleFound.lisence_place;
+        vehicleFound.license_place = vehicleFound.license_place;
         vehicleFound.vehicle_type = vehicleFound.vehicle_type;
-        vehicleFound.user = user;
-        vehicleFound.tiket = tiket._id;
-        vehicleFound.fare = vehicleFound.fare;
+        vehicleFound.user = vehicleFound.user;
+        vehicleFound.ticket = vehicleFound.ticket;
+        vehicleFound.fare = vehicleFound.fare || fare._id;
         vehicleFound.date = vehicleFound.date;
         vehicleFound.hour_in = vehicleFound.hour_in;
         vehicleFound.hour_out = HourOut;
@@ -151,7 +178,7 @@ const updateVehicle = async (req, res) => {
 
 const deleteVehicle = async (req, res) => {
     try {
-        console.log("DELETE/tiket", req.params.id);
+        console.log("DELETE/vehicle", req.params.id);
         const { id } = req.params;
 
         const vehicleExists = await Vehicle.findById({ _id: id });

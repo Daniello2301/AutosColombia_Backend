@@ -17,4 +17,4 @@ const jwtGenerator = ( user ) => {
     return token;
 }
 
-module.exports =  jwtGenerator;
+module.exports = { jwtGenerator };

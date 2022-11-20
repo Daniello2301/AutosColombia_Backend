@@ -1,19 +1,29 @@
 const router = require('express').Router();
-
-const tiketcontroller = require('../controllers/tiket-controller');
+const { check } = require("express-validator");
+const  { jwtValidate } = require("../middlewares/jwt-validator");
+const ticketController = require('../controllers/ticket-controller');
 
 router.route('/ticket')
-    .get(tiketcontroller.getAll)
-    .post(tiketcontroller.createTicket)
+    .get([jwtValidate],ticketController.getAll)
+    .post([
+        check("code", "Code is require").not().isEmpty(),
+        check("cell", "Cell is require").not().isEmpty(),
+        check("value", "Value is require").not().isEmpty(),
+        jwtValidate],ticketController.createTicket)
 
 router.route('/ticket-code')
-    .get(tiketcontroller.getByCodeTicket)
+    .get(
+        check("code", "The Code is require").not().isEmpty(),
+        ticketController.getByCodeTicket)
 
 
 router.route('/ticket/:id')
-    .get(tiketcontroller.getById)
-    .put(tiketcontroller.updateTicket)
-    .patch(tiketcontroller.updateTicket)
-    .delete(tiketcontroller.deleteTicket)
+    .get(ticketController.getById)
+    .put([
+        check("cell", "Cell is require").not().isEmpty(),
+        jwtValidate
+        ],ticketController.updateTicket)
+    .patch([jwtValidate],ticketController.updateTicket)
+    .delete([jwtValidate],ticketController.deleteTicket)
 
 module.exports = router;

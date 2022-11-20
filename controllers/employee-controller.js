@@ -33,16 +33,16 @@ const createEmployee = async (req, res) => {
     try {
         console.log("POST/employee");
 
-        const employeetFound = await Employee.findOne({
+        const employeeFound = await Employee.findOne({
             document: req.body.document,
         });
-        if (employeetFound) {
+        if (employeeFound) {
             return res.status(400).json({ msj: "The employee is already exist" });
         }
 
         let newEmployee = new Employee();
 
-       
+
         newEmployee.document = req.body.document;
         newEmployee.name = req.body.name;
         newEmployee.lastName = req.body.lastName;
@@ -76,7 +76,7 @@ const updateEmployee = async (req, res) => {
             return res.status(404).json({ mjs: "Not found employee" });
         }
 
-        const { document, name, lastName, phone, address, email, password, position} = req.body;
+        const { document, name, lastName, phone, address, email, password, position } = req.body;
 
         let employeeExists = await Employee.findOne({
             document: document,
@@ -86,7 +86,7 @@ const updateEmployee = async (req, res) => {
             return res.status(404).json({ mjs: "employee is already exist" });
         }
 
-        employeeFound.document= document;
+        employeeFound.document = document;
         employeeFound.name = name;
         employeeFound.lastName = lastName;
         employeeFound.phone = phone;

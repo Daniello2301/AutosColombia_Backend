@@ -12,7 +12,7 @@ const CustomerSchema = Schema({
     },
     lastName:{
         type: String,
-        required: true,
+        required: false,
     },
     phone:{
         type: Number,
@@ -20,17 +20,12 @@ const CustomerSchema = Schema({
     },
     direction:{
         type: String,
-        required: true,
-    },
-    vehicle:{
-        type: Schema.Types.ObjectId,
-        ref:'Vehicle',
-        required:true      
+        required: false,
     }
 },
 {
     timestamps:true,
-    versionkey:false
+    versionKey:false
 }) 
 
 module.exports = model('Customer',CustomerSchema)

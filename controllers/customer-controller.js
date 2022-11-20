@@ -1,9 +1,11 @@
 const Customer = require("../models/customer");
+const { validationResult } = require("express-validator");
 
 const getAll = async (req, res) => {
     try {
         console.log("GET/customers");
-        const response = await Customer.find().populate([
+        const response = await Customer.find();
+        /* populate([
             {
                 path: "vehicle",
                 select:"lisence_place date, hour_in hour_out",
@@ -17,7 +19,7 @@ const getAll = async (req, res) => {
                     select:"fare_type", 
                 }]
             }
-        ]);
+        ]); */
 
         res.status(201).send(response);
     } catch (error) {
@@ -49,6 +51,11 @@ const createCustomer = async (req, res) => {
     try {
         console.log("POST/customer");
 
+        const errors = validationResult(req);
+        if(!errors.isEmpty()){
+            return res.status(400).json({ message: errors.array() });
+        }
+
         const customerFound = await Customer.findOne({
             document: req.body.document,
         });
@@ -60,10 +67,10 @@ const createCustomer = async (req, res) => {
         let newCustomer = new Customer();
         newCustomer.document = req.body.document;
         newCustomer.name = req.body.name;
-        newCustomer.lastName = req.body.lastName;
+        newCustomer.lastName = req.body.lastName || "";
         newCustomer.phone = req.body.phone;
-        newCustomer.direction = req.body.direction;
-        newCustomer.vehicle = req.body.vehicle._id;
+        newCustomer.direction = req.body.direction || "";
+        /* newCustomer.vehicle = req.body.vehicle._id; */
 
         newCustomer = await newCustomer.save();
 
@@ -88,10 +95,10 @@ const updateCustomer = async (req, res) => {
             return res.status(404).json({ mjs: "Not found vehicle" });
         }
 
-        const {document, name,lastName, phone, direction, vehicle} = req.body;
+        const {document,  phone, direction} = req.body;
 
         let customerExists = await Customer.findOne({
-            document:document,
+            document : document,
             _id: { $ne: id },
         });
         if (customerExists) {
@@ -102,8 +109,8 @@ const updateCustomer = async (req, res) => {
         customerFound.name = customerFound.name;
         customerFound.lastName = customerFound.lastName;
         customerFound.phone = phone;
-        customerFound.direction = direction;
-        customerFound.vehicle = vehicle._id;
+        customerFound.direction = direction || "";
+        /* customerFound.vehicle = vehicle._id; */
 
         customerFound = await customerFound.save();
 

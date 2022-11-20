@@ -1,19 +1,29 @@
 const router = require('express').Router();
-
-const vehiclecontroller = require('../controllers/vehicle-controller');
+const { check } = require('express-validator');
+const  { jwtValidate } = require("../middlewares/jwt-validator");
+const vehicleController = require('../controllers/vehicle-controller');
 
 router.route('/vehicle')
-    .get(vehiclecontroller.getAll)
-    .post(vehiclecontroller.createVehicle)
+    .get([jwtValidate],vehicleController.getAll)
+    .post([
+        check('license_place', "Liscense type is required").notEmpty(),
+        check('vehicle_type', "Vehicle type is required").notEmpty(),
+        check('vehicle_type', "Vehicle type invalid").isIn(['MOTO','CARRO']),
+        check('user', "Customer is required").notEmpty(),
+        check('ticket', "Ticket is required").notEmpty(),
+        check('fare', "Fare is required").notEmpty(),
+        jwtValidate], vehicleController.createVehicle)
     
     
 router.route('/vehi-license')
-    .get(vehiclecontroller.getByLicense)
+    .get(vehicleController.getByLicense)
     
 router.route('/vehicle/:id')
-    .get(vehiclecontroller.getById)
-    .put(vehiclecontroller.updateVehicle)
-    .patch(vehiclecontroller.updateVehicle)
-    .delete(vehiclecontroller.deleteVehicle)
+    .get([jwtValidate], vehicleController.getById)
+    .put([
+        check('fare', "Fare is required").notEmpty(),
+        jwtValidate], vehicleController.updateVehicle)
+    .patch([jwtValidate], vehicleController.updateVehicle)
+    .delete([jwtValidate], vehicleController.deleteVehicle)
 
 module.exports = router;
