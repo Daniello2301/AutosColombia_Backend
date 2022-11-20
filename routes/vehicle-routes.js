@@ -6,7 +6,7 @@ const vehicleController = require('../controllers/vehicle-controller');
 router.route('/vehicle')
     .get([jwtValidate],vehicleController.getAll)
     .post([
-        check('license_place', "Liscense type is required").notEmpty(),
+        check('license_place', "License type is required").notEmpty(),
         check('vehicle_type', "Vehicle type is required").notEmpty(),
         check('vehicle_type', "Vehicle type invalid").isIn(['MOTO','CARRO']),
         check('user', "Customer is required").notEmpty(),

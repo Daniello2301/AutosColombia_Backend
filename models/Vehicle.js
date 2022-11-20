@@ -2,48 +2,48 @@ const mongoose = require('mongoose');
 
 const VehicleSchema = mongoose.Schema({
 
-    license_place:{
-        type:String,
-        required:true,
-        unique:true
+    license_place: {
+        type: String,
+        unique: true,
+        required: true
     },
-    vehicle_type:{
-        type:String,
-        required:true,
-        enum:['MOTO', 'CARRO']
+    vehicle_type: {
+        type: String,
+        required: true,
+        enum: ['MOTO', 'CARRO']
     },
-    user:{
+    user: {
         type: mongoose.Schema.Types.ObjectId,
-        ref:'Customer',
-        required:true
+        ref: 'Customer',
+        required: true
     },
-    ticket:{
+    ticket: {
         type: mongoose.Schema.Types.ObjectId,
-        ref:'Ticket',
-        required:true
+        ref: 'Ticket',
+        required: true
     },
-    fare:{
+    fare: {
         type: mongoose.Schema.Types.ObjectId,
-        ref:'Fare',
-        required:true 
+        ref: 'Fare',
+        required: true
     },
-    date:{
+    date: {
         type: Date,
-        required:true
+        required: true
     },
-    hour_in:{
-        type:String,
-        required:true
+    hour_in: {
+        type: String,
+        required: true
     },
-    hour_out:{
-        type:String,
-        required:true
+    hour_out: {
+        type: String,
+        required: true
     }
 
 },
-{
-    timestamps:true,
-    versionKey:false
-});
+    {
+        timestamps: true,
+        versionKey: false
+    });
 
 module.exports = mongoose.model('Vehicle', VehicleSchema);

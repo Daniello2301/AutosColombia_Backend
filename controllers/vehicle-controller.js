@@ -111,9 +111,9 @@ const createVehicle = async (req, res) => {
 
         vehicle.license_place = req.body.license_place;
         vehicle.vehicle_type = req.body.vehicle_type;
-        vehicle.user = req.body.user?._id;
-        vehicle.ticket = req.body.ticket?._id;
-        vehicle.fare = req.body.fare?._id;
+        vehicle.user = req.body.user._id;
+        vehicle.ticket = req.body.ticket._id;
+        vehicle.fare = req.body.fare._id;
         vehicle.date = Date.now();
         vehicle.hour_in = HourIn;
         vehicle.hour_out = "00:00";
