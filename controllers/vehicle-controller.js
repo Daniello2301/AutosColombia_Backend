@@ -8,15 +8,7 @@ const getAll = async (req, res) => {
             {
                 path: "user",
                 select: "document name phone",
-            },
-            {
-                path: "ticket",
-                select: "cell employee value date",
-            },
-            {
-                path: "fare",
-                select: "fare_type",
-            },
+            }
         ]);
         res.status(200).send(response);
     } catch (error) {
@@ -37,15 +29,7 @@ const getById = async (req, res) => {
             {
                 path: "user",
                 select: "document name phone",
-            },
-            {
-                path: "ticket",
-                select: "cell employee value date",
-            },
-            {
-                path: "fare",
-                select: "fare_type",
-            },
+            }
         ]);;
         res.status(200).send(response);
     } catch (error) {
@@ -65,15 +49,7 @@ const getByLicense = async (req, res) => {
             {
                 path: "user",
                 select: "document name phone",
-            },
-            {
-                path: "ticket",
-                select: "cell employee value date",
-            },
-            {
-                path: "fare",
-                select: "fare_type",
-            },
+            }
         ]);
 
         res.status(200).send(response); 
@@ -112,11 +88,7 @@ const createVehicle = async (req, res) => {
         vehicle.license_place = req.body.license_place;
         vehicle.vehicle_type = req.body.vehicle_type;
         vehicle.user = req.body.user._id;
-        vehicle.ticket = req.body.ticket._id;
-        vehicle.fare = req.body.fare._id;
         vehicle.date = Date.now();
-        vehicle.hour_in = HourIn;
-        vehicle.hour_out = "00:00";
 
 
         vehicle = await vehicle.save();
@@ -142,7 +114,7 @@ const updateVehicle = async (req, res) => {
             return res.status(404).json({ mjs: "Not found vehicle" });
         }
 
-        const { license_place, fare } = req.body;
+        const { license_place } = req.body;
 
         let vehicleExists = await Vehicle.findOne({
             license_place: license_place,
@@ -152,17 +124,10 @@ const updateVehicle = async (req, res) => {
             return res.status(404).json({ mjs: "Vehicle is already exist" });
         }
 
-        DateOut = new Date();
-        HourOut = DateOut.getHours() + " : " + DateOut.getMinutes();
-
         vehicleFound.license_place = vehicleFound.license_place;
         vehicleFound.vehicle_type = vehicleFound.vehicle_type;
         vehicleFound.user = vehicleFound.user;
-        vehicleFound.ticket = vehicleFound.ticket;
-        vehicleFound.fare = vehicleFound.fare || fare._id;
         vehicleFound.date = vehicleFound.date;
-        vehicleFound.hour_in = vehicleFound.hour_in;
-        vehicleFound.hour_out = HourOut;
 
         vehicleFound = await vehicleFound.save();
 

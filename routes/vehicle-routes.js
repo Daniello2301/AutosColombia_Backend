@@ -10,8 +10,6 @@ router.route('/vehicle')
         check('vehicle_type', "Vehicle type is required").notEmpty(),
         check('vehicle_type', "Vehicle type invalid").isIn(['MOTO','CARRO']),
         check('user', "Customer is required").notEmpty(),
-        check('ticket', "Ticket is required").notEmpty(),
-        check('fare', "Fare is required").notEmpty(),
         jwtValidate], vehicleController.createVehicle)
     
     

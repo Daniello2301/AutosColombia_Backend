@@ -17,29 +17,10 @@ const VehicleSchema = mongoose.Schema({
         ref: 'Customer',
         required: true
     },
-    ticket: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Ticket',
-        required: true
-    },
-    fare: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Fare',
-        required: true
-    },
     date: {
         type: Date,
         required: true
-    },
-    hour_in: {
-        type: String,
-        required: true
-    },
-    hour_out: {
-        type: String,
-        required: true
     }
-
 },
     {
         timestamps: true,

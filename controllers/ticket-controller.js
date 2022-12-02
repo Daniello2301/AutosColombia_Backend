@@ -1,12 +1,32 @@
 const Ticket = require("../models/Ticket");
+const Fare = require("../models/Fare");
 const { validationResult } = require("express-validator");
+const { ticketNumberGenerator } = require('../helpers/ticketNumber');
 const session = require('express-session');
 
 const getAll = async (req, res) => {
     try {
         console.log("GET/Tickets");
         console.log(session.user?._id);
-        const response = await Ticket.find();
+        const response = await Ticket.find().populate([
+            {
+                path:"employee",
+                select: "name lastName phone email"
+            },
+            {
+                path:"fare",
+                select:"fare_type value"
+            },
+            {
+                path:"vehicle",
+                select:"license_place user",
+                populate:[{
+                    path:"user",
+                    select:"name lastName phone"
+                    
+                }]
+            }
+        ]);
         res.status(200).send(response);
     } catch (error) {
         console.log(error);
@@ -23,7 +43,25 @@ const getById = async (req, res) => {
 
         const { id } = req.params;
 
-        const response = await Ticket.findById({ _id: id });
+        const response = await Ticket.findById({ _id: id }).populate([
+            {
+                path:"employee",
+                select: "name lastName phone email"
+            },
+            {
+                path:"fare",
+                select:"fare_type value"
+            },
+            {
+                path:"vehicle",
+                select:"license_place user",
+                populate:[{
+                    path:"user",
+                    select:"name lastName phone"
+                    
+                }]
+            }
+        ]);;
         res.status(200).send(response);
     } catch (error) {
         console.log(error);
@@ -44,7 +82,25 @@ const getByCodeTicket = async (req, res) => {
         if (!errors.isEmpty()) {
             return res.status(400).json({ message: errors.msg });
         }
-        const ticketFound = await Ticket.findOne({ code: req.body.code });
+        const ticketFound = await Ticket.findOne({ code: req.body.code }).populate([
+            {
+                path:"employee",
+                select: "name lastName phone email"
+            },
+            {
+                path:"fare",
+                select:"fare_type value"
+            },
+            {
+                path:"vehicle",
+                select:"license_place user",
+                populate:[{
+                    path:"user",
+                    select:"name lastName phone"
+                    
+                }]
+            }
+        ]);;
 
         res.status(200).send(ticketFound);
 
@@ -74,14 +130,35 @@ const createTicket = async (req, res) => {
         if (ticketFound) {
             return res.status(400).json({ msj: "The Ticket is already exist" });
         }
+        
+        const fareFound = await Fare.findById({ _id: req.body.fare?.id });
+        if (!fareFound) {
+            return res.status(404).json({ msj: "Fare not found" });
+        }
 
+        // Get ticket number
+        codeTicket = ticketNumberGenerator();
+
+        // Hour
+        const now = new Date();
+        const current = now.getHours() + ':' + now.getMinutes();
         let ticket = new Ticket();
 
-        ticket.code = req.body.code;
+        // Payment ticker
+        if(fareFound.fare_type == "Mes_Carro" || fareFound.fare_type == "Mes_Moto"){
+            ticketPayed = true;
+        }
+
+        ticket.code = codeTicket;
         ticket.cell = req.body.cell;
         ticket.employee = session.user?._id;
-        ticket.value = req.body.value;
+        ticket.value = fareFound.value;
         ticket.date = Date.now();
+        ticket.payed = ticketPayed;
+        ticket.hour_in = current;
+        ticket.hour_out = "00:00"
+        ticket.fare = req.body.fare?.id;
+        ticket.vehicle = req.body.vehicle?.id
 
         ticket = await ticket.save();
 
@@ -118,14 +195,22 @@ const updateTicket = async (req, res) => {
 
         let ticketExists = await Ticket.findOne({ code: code, _id: { $ne: id } });
         if (ticketExists) {
-            return res.status(404).json({ mjs: "Fare is already exist" });
+            return res.status(404).json({ mjs: "Ticket is already exist" });
         }
+
+        const now = new Date();
+        const current = now.getHours() + ':' + now.getMinutes();
 
         ticketFound.code = ticketFound.code;
         ticketFound.cell = cell;
         ticketFound.employee = ticketFound.employee;
         ticketFound.value = ticketFound.value;
         ticketFound.date = ticketFound.date;
+        ticketFound.payed = true;
+        ticketFound.hour_in = ticketFound.hour_in; 
+        ticketFound.hour_out = current;
+        ticketFound.fare = req.body.fare.id;
+        ticketFound.vehicle = ticketFound.vehicle;
 
         ticketFound = await ticketFound.save();
 
@@ -149,7 +234,7 @@ const deleteTicket = async (req, res) => {
             return res.status(404).json({ mjs: "Ticket not exist" });
         }
 
-        const response = await TicketExist.remove();
+        const response = await ticketExist.remove();
 
         res.status(200).json(response);
     } catch (error) {
@@ -158,8 +243,78 @@ const deleteTicket = async (req, res) => {
             .status(500)
             .json({ msj: "Internal server error :(" })
             .send(error.message);
-    }
+    } 
 };
+
+const paymentTicket = async(req, res) => {
+
+    try{
+
+        console.log("Payment Ticket: ", req.body.code);
+        let ticketFound = await Ticket.findOne({code : req.body.code}).populate([
+            {
+                path:"employee",
+                select: "name lastName phone email"
+            },
+            {
+                path:"fare",
+                select:"fare_type value"
+            },
+            {
+                path:"vehicle",
+                select:"license_place user",
+                populate:[{
+                    path:"user",
+                    select:"name lastName phone"
+                    
+                }]
+            }
+        ]);
+        if(!ticketFound)
+        {
+            return res.status(404).json({ Message: "Ticket Not Found"});
+        }
+        const now = new Date();
+        const current = now.getHours() + ':' + now.getMinutes();
+        // Total hours in parking
+        let parkingTime =  parseInt(current) - parseInt(ticketFound.hour_in); 
+
+        // Validate if pay to month or hour
+        if(ticketFound.fare?.fare_type == 'Hora_Moto' || ticketFound.fare?.fare_type == 'Hora_Carro' && ticketFound.payed == false)
+        { total = parkingTime * ticketFound.fare?.value;}
+        else{ total = ticketFound.fare?.value; }
+
+        
+        response = {
+            code: ticketFound.code,
+            cell: ticketFound.cell,
+            employee: ticketFound.employee.name,
+            value_parkin: ticketFound.fare?.value,
+            hour_in: ticketFound.hour_in,
+            hour_out: current,
+            fare: ticketFound.fare?.fare_type,
+            license_place: ticketFound.vehicle?.license_place,
+            customer: ticketFound.vehicle?.user?.name,
+            parkingTime: parkingTime,
+            total : total
+        }
+
+        ticketFound.payed = true;
+        ticketFound.hour_out = current;
+        ticketFound.value = total;
+
+        ticketFound = await ticketFound.save()
+
+        res.status(200).send(response);
+
+    }catch(error){
+        console.log(error);
+        res
+            .status(500)
+            .json({ msj: "Internal server error :(" })
+            .send(error.message);
+    } 
+}
 
 module.exports = {
     getAll,
@@ -168,4 +323,5 @@ module.exports = {
     createTicket,
     updateTicket,
     deleteTicket,
+    paymentTicket
 };

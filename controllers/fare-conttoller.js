@@ -44,6 +44,7 @@ const create = async (req, res) => {
 
         fare.fare_type = req.body.fare_type;
         fare.vehicle_type = req.body.vehicle_type;
+        fare.value = req.body.value;
 
         fare = await fare.save();
 
@@ -68,13 +69,14 @@ const update = async (req, res) => {
         let fareFound = await Fare.findById({ _id: id });
         if (!fareFound) { return res.status(404).json({ mjs: "Not found fare" }) }
 
-        const { fare_type, vehicle_type } = req.body;
+        const { fare_type, vehicle_type, value } = req.body;
 
         let fareExists = await Fare.findOne({ fare_type: fare_type, _id: { $ne: id } });
         if (fareExists) { return res.status(404).json({ mjs: "Fare is already exist" }) }
 
         fareFound.fare_type = fare_type;
         fareFound.vehicle_type = vehicle_type;
+        fareFound.value = value;
 
         fareFound = await fareFound.save();
 

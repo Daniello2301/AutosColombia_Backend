@@ -11,6 +11,10 @@ const FareSchema = Schema({
         type: String,
         enum: ['MOTO', 'CARRO'],
         required: true
+    },
+    value:{
+        type: Number,
+        required: true
     }
 },
 {
