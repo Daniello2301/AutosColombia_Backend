@@ -143,7 +143,7 @@ const createTicket = async (req, res) => {
         const now = new Date();
         const current = now.getHours() + ':' + now.getMinutes();
         let ticket = new Ticket();
-
+        let ticketPayed = false;
         // Payment ticker
         if(fareFound.fare_type == "Mes_Carro" || fareFound.fare_type == "Mes_Moto"){
             ticketPayed = true;
@@ -295,8 +295,8 @@ const paymentTicket = async(req, res) => {
             fare: ticketFound.fare?.fare_type,
             license_place: ticketFound.vehicle?.license_place,
             customer: ticketFound.vehicle?.user?.name,
-            parkingTime: parkingTime,
-            total : total
+            parkingTime: parkingTime == 0 ? 1 : "No time parking",
+            total : total == 0 ? ticketFound.fare?.value : ticketFound.fare?.value
         }
 
         ticketFound.payed = true;
